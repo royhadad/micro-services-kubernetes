@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy-gateway-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: proxy-gateway-pod
+  template:
+    metadata:
+      labels:
+        name: proxy-gateway-pod
+    spec:
+      containers:
+        - name: proxy-gateway
+          image: micro-services_proxy-gateway
+          imagePullPolicy: Never
+          env:
+            - name: PORT
+              value: "5003"
+          ports:
+            - containerPort: 5003
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: auth-pod
+  template:
+    metadata:
+      labels:
+        name: auth-pod
+    spec:
+      containers:
+        - name: auth
+          image: micro-services_auth
+          imagePullPolicy: Never
+          env:
+            - name: PORT
+              value: "5002"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: micro-services-secrets
+                  key: AUTH_JWT_SECRET
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: micro-services-secrets
+                  key: AUTH_DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: micro-services-secrets
+                  key: AUTH_DB_PASSWORD
+            - name: DB_CONNECTION_URL
+              valueFrom:
+                secretKeyRef:
+                  name: micro-services-secrets
+                  key: AUTH_DB_CONNECTION_URL
+          ports:
+            - containerPort: 5002
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: weather-pod
+  template:
+    metadata:
+      labels:
+        name: weather-pod
+    spec:
+      containers:
+        - name: weather
+          image: micro-services_weather
+          imagePullPolicy: Never
+          env:
+            - name: PORT
+              value: "5001"
+            - name: OPEN_WEATHER_MAP_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: micro-services-secrets
+                  key: WEATHER_OPEN_WEATHER_MAP_API_KEY
+            - name: MONGODB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: micro-services-secrets
+                  key: WEATHER_MONGODB_URL
+          ports:
+            - containerPort: 5001
