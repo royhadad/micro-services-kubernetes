@@ -1,0 +1,7 @@
+#1
+add production ip to mongodb atlas whitelist
+add env vars to production container
+add production url on postman environment
+
+#2
+add github workflow for auto deploy on push
