@@ -1,1 +1,11 @@
 secrets.yaml
+
+./auth/node_modules
+./auth/.env
+
+
+./weather/node_modules
+./weather/.env
+
+./proxy-gateway/node_modules
+./proxy-gateway/.env
